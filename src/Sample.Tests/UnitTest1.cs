@@ -1,14 +1,32 @@
 using System;
+using FluentAssertions;
 using Xunit;
 
-namespace Sample.Tests
+public record DtoInfo
 {
-    public class UnitTest1
+    public string Header { get; init; } = "1";
+}
+
+public record Dto(string Body) : DtoInfo;
+
+public class UnitTest1
+{
+    [Fact]
+    public void Test1()
     {
-        [Fact]
-        public void Test1()
+        var dto = new Dto("Body");
+
+        var m = dto switch
         {
-            Assert.True(true);
-        }
+            { Header: _ } => dto with { Header = "Header" },
+            //DtoInfo x => x with { Header = "Header" },
+        };
+
+       
+        m.Should().BeEquivalentTo(new
+        {
+                Header = "Header",
+                Body = "Body",
+        });
     }
 }
